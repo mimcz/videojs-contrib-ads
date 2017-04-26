@@ -34,6 +34,29 @@ QUnit.test('restores the original video src after ads', function(assert) {
   assert.strictEqual(this.player.currentSrc(), originalSrc, 'the original src is restored');
 });
 
+QUnit.test('snapshot save the original MSE video src, not blob', function(assert) {
+  var setTimeoutSpy;
+  var originalSrc = {
+    src: 'http://example.com/original.m3u8',
+    type: 'application/x-mpegURL'
+  };
+  this.player.ads.mseSource = originalSrc;
+
+  assert.expect(2);
+  this.player.src(originalSrc);
+  this.player.trigger('adsready');
+  this.player.trigger('play');
+  this.player.ads.startLinearAdMode();
+  this.player.ads.snapshot = snapshot.getPlayerSnapshot(this.player);
+  this.player.src({
+      src: '//example.com/ad.mp4',
+      type: 'video/mp4'
+  });
+  this.player.ads.endLinearAdMode();
+  assert.strictEqual(this.player.ads.snapshot.currentSrc, originalSrc.src, 'the original src is restored');
+  assert.strictEqual(this.player.ads.snapshot.type, originalSrc.type, 'the original type is restored');
+});
+
 QUnit.test('waits for the video to become seekable before restoring the time', function(assert) {
   var setTimeoutSpy;
 
@@ -123,7 +146,7 @@ QUnit.test('snapshot does not resume playback after post-rolls', function(assert
   this.player.src('http://media.w3.org/2010/05/sintel/trailer.mp4');
   this.player.trigger('loadstart');
   this.player.trigger('canplay');
-
+  this.clock.tick(1000);
   // "canplay" causes the `restorePlayerSnapshot` function in the plugin
   // to be called. This causes content playback to be resumed after 20
   // attempts of a 50ms timeout (20 * 50 == 1000).
