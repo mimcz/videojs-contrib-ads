@@ -17,6 +17,18 @@ import videojs from 'video.js';
 export function getPlayerSnapshot(player) {
 
   let currentTime;
+  let currentSrc;
+  let currentType;
+
+  // Check if the source is MSE dependent hls/dash (excluding native support)
+  // If so point snapshot to manifest and right type instead blob URI
+  if (player.ads.mseSource) {
+    currentSrc = player.ads.mseSource.src;
+    currentType = player.ads.mseSource.type;
+  } else {
+    currentSrc = player.currentSrc();
+    currentType = player.currentType();
+  }
 
   if (videojs.browser.IS_IOS && player.ads.isLive(player)) {
     // Record how far behind live we are
@@ -36,10 +48,10 @@ export function getPlayerSnapshot(player) {
   const suppressedTracks = [];
   const snapshotObject = {
     ended: player.ended(),
-    currentSrc: player.currentSrc(),
+    currentSrc,
     src: player.tech_.src(),
     currentTime,
-    type: player.currentType()
+    type: currentType
   };
 
   if (tech) {

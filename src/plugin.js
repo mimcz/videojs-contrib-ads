@@ -59,7 +59,11 @@ const defaults = {
   debug: false,
 
   // set this to true when using ads that are part of the content video
-  stitchedAds: false
+  stitchedAds: false,
+
+  // Media Source Extensions possibly dependent source
+  // if so, pass the source object {src: 'url', type: 'mime'}
+  mseSource: null
 };
 
 const contribAdsPlugin = function(options) {
@@ -129,6 +133,8 @@ const contribAdsPlugin = function(options) {
     // This is an estimation of the current ad type being played
     // This is experimental currently. Do not rely on its presence or behavior!
     adType: null,
+
+    mseSource: settings.mseSource,
 
     VERSION: '__VERSION__',
 
