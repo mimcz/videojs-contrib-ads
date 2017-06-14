@@ -71,8 +71,9 @@ export default function adMacroReplacement(string, uriEncode, customMacros) {
 
   // Go through all the replacement macros and apply them to the string.
   // This will replace all occurrences of the replacement macros.
-  for (const i in macros) {
+  for (let i in macros) {
     string = string.split(i).join(uriEncodeIfNeeded(macros[i], uriEncode));
+    i = 'clear';
   }
 
   // Page variables
